@@ -20,11 +20,12 @@ from datetime import datetime
 import os
 import platform
 if (platform.system()=='Darwin'):
-    g_data_path = f"{os.getcwd()}/data/" 
+    g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
 else: 
-    g_data_path = f"C:\\Users\\seanl\\OneDrive\\80-股市\\00-Stock\\data\\"
+    g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
 
-file = open(f'{g_data_path}fd_div_2023_01_01_to_07_12.txt','r')
+
+file = open(f'{g_data_path}fd_div_2023-01-01_to_07-19.txt','r')
 
 total=0
 total2=0

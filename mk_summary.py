@@ -19,11 +19,11 @@ import os
 import platform
 
 if (platform.system()=='Darwin'):
-    g_data_path = f"{os.getcwd()}/data/" 
+    g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
 else: 
-    g_data_path = f"C:\\Users\\seanl\\OneDrive\\80-股市\\00-Stock\\data\\"
+    g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
 
-#g_data_path = f"{os.getcwd()}/data/" 
+
 g_yf_export_vg_fd = f'{g_data_path}yf_export_vg_fd.csv'
 g_xl_summary_file = f'{g_data_path}summary-{str(date.today())}.xlsx'
 g_yf_export_tw = f'{g_data_path}yf_export_tw.csv'
