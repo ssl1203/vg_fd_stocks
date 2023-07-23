@@ -68,7 +68,7 @@ for div in stock_div:
     print(f'** {div[0]}, {div[1]}, {div[2]}')
     stock_div_total+=div[2]
 
-print(f' Stock dividend total = {stock_div_total}')
+print(f' Stock dividend total = {round(stock_div_total,2)}')
 print('-----------------------------')
 stock_sold_total = 0
 for tokens in stock_sold:
@@ -77,7 +77,8 @@ for tokens in stock_sold:
 
 print('-----------------------------')
 
-print(f"VMFXX = {round(VMFXX_total,2)}, Stock Div = {round(stock_div_total,2)}, Stock Sell ={round(stock_sold_total,2)}")
+#print(f"VMFXX = {round(VMFXX_total,2)}, Stock Div = {round(stock_div_total,2)}, Stock Sell ={round(stock_sold_total,2)}")
+print(f"Total Div = {round(VMFXX_total,2)+round(stock_div_total,2)}, Stock Sell ={round(stock_sold_total,2)}")
 print(f' TOTAL = {round(VMFXX_total+stock_div_total+stock_sold_total,2)}')   
 
 
