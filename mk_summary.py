@@ -275,8 +275,7 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
 
                 try :
                     if (fd_row[2]=='Pending Activity'):
-
-                        shares = float(re.sub('[$,]', '', fd_row[6]))
+                        shares = float(re.sub('[$,]', '', fd_row[7]))
                         add_shares(matrix,fd_acc_name,'$$CASH',shares,1,col_header,symb_list) 
                     else:
                         symb = fd_row[2]
@@ -489,7 +488,8 @@ def make_export_for_yf(df_holdings,yf_export_file):
     try:
         with open(yf_export_file, 'w') as yf_csv:
             yf_csv.write(title)
-            for stock_position in df_holdings.itertuples(): 
+            # reverse order from small to large position
+            for stock_position in df_holdings.iloc[::-1].itertuples(): 
                 yf_csv.write(f'{stock_position[1]},{stock_position[2]},,,,,,,,,,{stock_position[4]},,,,\r') 
             yf_csv.close()
               
@@ -542,8 +542,6 @@ def main_vg_fd():
         df_sorted = df2.sort_values([2], ascending=[False])
         
         save2excel(f'{vg_fd_sheet_name}',df_sorted,col_header_vg_fd)  
-        
-        df_sorted = df_sorted.sort_values([2], ascending=[True])
         
         make_export_for_yf(df_sorted,g_yf_export_vg_fd)
 
