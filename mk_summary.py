@@ -18,6 +18,15 @@ from datetime import time
 import os
 import platform
 
+# install lib
+# >pip install requests
+# >pip install beautifulsoup4
+# >pip install lxml
+from bs4 import BeautifulSoup
+import requests
+import lxml
+
+
 if (platform.system()=='Darwin'):
     g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
 else: 
@@ -30,8 +39,6 @@ g_yf_export_tw = f'{g_data_path}yf_export_tw.csv'
 global g_fd_mephy_download_csv
 global g_fd_download_csv
 global g_vg_download_csv
-
-
 
 
 def g_init():
@@ -178,9 +185,58 @@ def get_current_stock_price(symb):
             price=0
     return round(price ,2)   
 
+#########################################
+######### Get ETF Top Holdings ##########
+######################################### 
+mega_8 = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'TSLA', 'GOOGL', 'GOOG', 'TSM']
+mega8_value_dict = {'AAPL':0, 'MSFT':0, 'AMZN':0, 'NVDA':0, 'META':0, 'TSLA':0, 'GOOGL':0, 'GOOG':0, 'TSM':0}
+
+def GetHoldings(etf_ticker):
+    crawler_headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36 QIHU 360SE'
+    }
+    etf_html = requests.get(f"https://finance.yahoo.com/quote/{etf_ticker}/holdings?p={etf_ticker}",headers=crawler_headers)
+    top_10 = []
+    etf_page_content = BeautifulSoup(etf_html.content,'lxml')
+
+    #find the top holdings table
+    the_table = etf_page_content.find('table', {'class': 'W(100%) M(0) BdB Bdc($seperatorColor)'})
+    if the_table==None:
+        return []
+
+    top_10_dict = {}
+    top_10_table = the_table.find_all('tr',   {'class': 'Ta(end) BdT Bdc($seperatorColor) H(36px)'})
+    for item in top_10_table: 
+        symb = item.find('a',{'class','Fz(s) Ell Fw(b) C($linkColor)'}).text
+        percent = item.find('td',{'class',''}).text
+        top_10.append([f'{symb}',float(percent.replace('%',''))])
+        top_10_dict[f'{symb}'] = float(percent.replace('%',''))
+    return top_10_dict
+
+def calc_mega_8_holdings(df_all_stocks):
+    for index, row in df_all_stocks.iterrows():
+        symb = row[0]
+        value = float(row[2])
+        if symb  in mega_8 :
+            mega8_value_dict[f'{symb}'] += value
+            continue
+        top_10_dict = GetHoldings(row[0])
+        if len(top_10_dict) == 0:
+            continue
+        for item in top_10_dict:
+            if item in mega_8:
+                #print(f' add etf ({symb}) to {item} ', float(top_10_dict[f'{item}'])/100*value)                 
+                mega8_value_dict[f'{item}'] += float(top_10_dict[f'{item}'])/100*value
+    #consolidate GOOGL to GOOG
+    mega8_value_dict['GOOG'] += mega8_value_dict['GOOGL']
+    del mega8_value_dict['GOOGL']
+
+    #quick fix to include 2330.tw to TSM
+    mega8_value_dict['TSM'] += 150000
+
+
 def add_shares(matrix,acc_name,new_symb,shares,price,col_header,symb_list):
     
-
     try:
         idx_col = col_header.index(acc_name)
     except:
@@ -423,6 +479,19 @@ def update_summary_sheet():
     ws_summary['A21'].value='CHFUSD=X'
     ws_summary['B21'].value = chf_x_rate
 
+##################################################################
+############  Gega_8 #############################################
+    global mega8_value_dict
+    col_id = ord('D')
+    row_id = 13
+    for row in mega8_value_dict:
+        print(f'mega_8 {row} =' , round(mega8_value_dict[f'{row}'],2))
+        ws_summary[f'{chr(col_id)}{row_id}'].value = row
+        ws_summary[f'{chr(col_id+1)}{row_id}'].value = round(mega8_value_dict[f'{row}'],2)
+        row_id+=1
+##################################################################
+
+
     print('----------- Summary Sheet Complete ---------------')
     #ws_summary['E6'].formula = tecn_total * ws_summary['E16'].value
    
@@ -476,8 +545,6 @@ def save2excel(sheet_name,df_sorted,col_header):
     #ws_vg_fd.range(f'C:{g_row_sum}').number_format = "#,##0.#000"
     print(f'================ Total Value :',  "{:,.0f}".format(ws[f'C2'].value), ' ===================')
 
-
-
     return True
 
 
@@ -509,7 +576,7 @@ def update_stock_line_item(df2):
             df2.iloc[row_no,1]=get_current_stock_price(df2.iloc[row_no,0])
         #calc total_shares
         count_symb+=1
-        print(f'>>>>> ({count_symb}) {df2.iloc[row_no,0]}--->{df2.iloc[row_no,1]}')
+        #print(f'>>>>> ({count_symb}) {df2.iloc[row_no,0]}--->{df2.iloc[row_no,1]}')
         total = 0
         for col_no in range(4,df2.shape[1]):
             total += round(df2.iloc[row_no,col_no],1) 
@@ -525,25 +592,29 @@ def main_vg_fd():
 
         print('Start reading VG =', datetime.now())
         vanguard_reader(matrix_2d,g_vg_dict,g_data_path+'vg.csv',col_header_vg_fd,symbs_vg_fd_list)
-        print('Start reading FD(1) =', datetime.now())
+        print('Start reading FD =', datetime.now())
 
         fidelity_reader(matrix_2d,g_fd_dict,g_data_path+"fd.csv",col_header_vg_fd,symbs_vg_fd_list)
 
-        print('Start reading FD(2) =', datetime.now())
-
+        #print('Start reading FD(2) =', datetime.now())
         #fidelity_reader(matrix_2d,g_fd_mephy_dict,g_data_path+"fd_mephy.csv",col_header_vg_fd,symbs_vg_fd_list)
-        print('End reading FD =', datetime.now())
+        #print('End reading FD =', datetime.now())
         
+        print('Get stock prices.... =', datetime.now())
+
         df2 = pd.DataFrame(matrix_2d)
 
         #update share_price (1), total_value (2) and total_shares (3) columns
         update_stock_line_item(df2)
 
         df_sorted = df2.sort_values([2], ascending=[False])
+
+        calc_mega_8_holdings(df2)
         
         save2excel(f'{vg_fd_sheet_name}',df_sorted,col_header_vg_fd)  
-        
+ 
         make_export_for_yf(df_sorted,g_yf_export_vg_fd)
+
 
 
     except:
@@ -605,7 +676,7 @@ def main_tw():
         
         save2excel(f'{tw_sheet_name}',df_sorted,col_header_tw)  
 
-        df_sorted = df_sorted.sort_values([2], ascending=[True])
+        #df_sorted = df_sorted.sort_values([2], ascending=[True])
 
         make_export_for_yf(df_sorted,g_yf_export_tw)
 
@@ -620,6 +691,8 @@ if __name__ == "__main__":
     g_init()
     print('starting...')
     main_vg_fd()
+
+
     main_tw()
         
     update_summary_sheet()
