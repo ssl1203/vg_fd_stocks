@@ -432,7 +432,7 @@ def update_summary_sheet():
     ws_summary.range(f'E1:E13').number_format =    "#,##0"
     ws_summary.range(f'B20:B21').number_format =   "##.00"
 
-    
+###############################################################
     ws_summary['D1'].value='Total'
     ws_summary['E1'].value='=SUM(B6:B18)'
 
@@ -481,6 +481,20 @@ def update_summary_sheet():
 
 ##################################################################
 ############  Gega_8 #############################################
+##############################################################
+    ws_summary['D12'].value =    'Mega_8 %'
+    ws_summary.range(f'F10:F25').number_format =   "##.00"
+    ws_summary.range(f'F13:F20').number_format =    '0.00%'
+    ws_summary.range(f'E13:E20').number_format =    "$#,##0"
+
+    ws_summary['F13'].value =    '=E13/E1'
+    ws_summary['F14'].value =    '=E14/E1'
+    ws_summary['F15'].value =    '=E15/E1'
+    ws_summary['F16'].value =    '=E16/E1'
+    ws_summary['F17'].value =    '=E17/E1'
+    ws_summary['F18'].value =    '=E18/E1'
+    ws_summary['F19'].value =    '=E19/E1'
+    ws_summary['F20'].value =    '=E20/E1'
     global mega8_value_dict
     col_id = ord('D')
     row_id = 13
