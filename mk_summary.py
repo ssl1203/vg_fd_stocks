@@ -212,7 +212,7 @@ def GetHoldings(etf_ticker):
         top_10.append([f'{symb}',float(percent.replace('%',''))])
         top_10_dict[f'{symb}'] = float(percent.replace('%',''))
     return top_10_dict
-
+qqq_top_10_dict = {}
 def calc_mega_8_holdings(df_all_stocks):
     for index, row in df_all_stocks.iterrows():
         symb = row[0]
@@ -220,16 +220,22 @@ def calc_mega_8_holdings(df_all_stocks):
         if symb  in mega_8 :
             mega8_value_dict[f'{symb}'] += value
             continue
-        top_10_dict = GetHoldings(row[0])
+        top_10_dict = GetHoldings(symb)
         if len(top_10_dict) == 0:
             continue
         for item in top_10_dict:
             if item in mega_8:
                 #print(f' add etf ({symb}) to {item} ', float(top_10_dict[f'{item}'])/100*value)                 
                 mega8_value_dict[f'{item}'] += float(top_10_dict[f'{item}'])/100*value
+                if symb=='QQQ':
+                    qqq_top_10_dict[f'{item}'] = float(top_10_dict[f'{item}'])/100
     #consolidate GOOGL to GOOG
     mega8_value_dict['GOOG'] += mega8_value_dict['GOOGL']
     del mega8_value_dict['GOOGL']
+
+    if qqq_top_10_dict['GOOG'] > 0 and qqq_top_10_dict['GOOGL'] > 0:
+        qqq_top_10_dict['GOOG']+=qqq_top_10_dict['GOOGL']
+        del qqq_top_10_dict['GOOGL']
 
     #quick fix to include 2330.tw to TSM
     mega8_value_dict['TSM'] += 150000
@@ -483,8 +489,10 @@ def update_summary_sheet():
 ############  Gega_8 #############################################
 ##############################################################
     ws_summary['D12'].value =    'Mega_8 %'
+    ws_summary['G12'].value =    'QQQ %'
     ws_summary.range(f'F10:F25').number_format =   "##.00"
     ws_summary.range(f'F13:F20').number_format =    '0.00%'
+    ws_summary.range(f'G13:G20').number_format =    '0.00%'
     ws_summary.range(f'E13:E20').number_format =    "$#,##0"
 
     ws_summary['F13'].value =    '=E13/E1'
@@ -496,12 +504,17 @@ def update_summary_sheet():
     ws_summary['F19'].value =    '=E19/E1'
     ws_summary['F20'].value =    '=E20/E1'
     global mega8_value_dict
+    global qqq_top_10_dict
     col_id = ord('D')
     row_id = 13
     for row in mega8_value_dict:
         print(f'mega_8 {row} =' , round(mega8_value_dict[f'{row}'],2))
         ws_summary[f'{chr(col_id)}{row_id}'].value = row
         ws_summary[f'{chr(col_id+1)}{row_id}'].value = round(mega8_value_dict[f'{row}'],2)
+
+        if row != 'TSM':
+            ws_summary[f'{chr(col_id+3)}{row_id}'].value = round(qqq_top_10_dict[f'{row}'],2)
+
         row_id+=1
 ##################################################################
 
