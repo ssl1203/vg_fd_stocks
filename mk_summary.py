@@ -519,7 +519,7 @@ def update_summary_sheet():
 
         row_id+=1
 ##################################################################
-
+ 
 
     print('----------- Summary Sheet Complete ---------------')
     #ws_summary['E6'].formula = tecn_total * ws_summary['E16'].value
