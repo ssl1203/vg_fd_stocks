@@ -1,5 +1,6 @@
 #--------------- instrcution -----------------
-# 1. Display saving account 'activities' from Fidelity web page
+# 1. Login and select 'X38745588' account, set [Dividends/Interest] filter and 
+#    select date ranges to [year to date] (this option appears if only one account is selected)
 # 2. Select relevent text on the web page and Copy
 # 3. Paste to Notepad++ and save as txt file for input 
 
@@ -26,7 +27,7 @@ else:
     g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
 
 
-file = open(f'{g_data_path}fd_div_ytd.txt','r')
+file = open(f'{g_data_path}fd_div_ytd_07_25.txt','r')
 
 total=0
 total2=0

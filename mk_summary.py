@@ -519,11 +519,11 @@ def update_summary_sheet():
         ws_summary[f'{chr(col_id+1)}{row_id}'].value = round(mega8_value_dict[f'{row}'],2)
 
         if row != 'TSM':
-            ws_summary[f'{chr(col_id+3)}{row_id}'].value = round(qqq_top_10_dict[f'{row}'],4)
+            ws_summary[f'{chr(col_id+3)}{row_id}'].value = qqq_top_10_dict[f'{row}']
 
         row_id+=1
 ##################################################################
-
+ 
 
     print('----------- Summary Sheet Complete ---------------')
     #ws_summary['E6'].formula = tecn_total * ws_summary['E16'].value
