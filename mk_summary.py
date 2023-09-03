@@ -398,8 +398,12 @@ def update_summary_sheet():
 
 ####################################
    
-
-    ws_vg_fd = wb.sheets[vg_fd_sheet_name]
+    try:
+        ws_vg_fd = wb.sheets[vg_fd_sheet_name]
+    except:
+        print(f'Failed at 404, vg_fd_sheet_name = {vg_fd_sheet_name}')
+        return
+    
     ws_vg_fd.range('A1:Z1').font.bold = True
     ws_vg_fd.range('A1:A30').font.bold = True
 
@@ -515,7 +519,7 @@ def update_summary_sheet():
         ws_summary[f'{chr(col_id+1)}{row_id}'].value = round(mega8_value_dict[f'{row}'],2)
 
         if row != 'TSM':
-            ws_summary[f'{chr(col_id+3)}{row_id}'].value = round(qqq_top_10_dict[f'{row}'],2)
+            ws_summary[f'{chr(col_id+3)}{row_id}'].value = round(qqq_top_10_dict[f'{row}'],4)
 
         row_id+=1
 ##################################################################
@@ -636,15 +640,23 @@ def main_vg_fd():
         #update share_price (1), total_value (2) and total_shares (3) columns
         update_stock_line_item(df2)
 
+        print("OK 1")
+
         df_sorted = df2.sort_values([2], ascending=[False])
 
+        print("OK 2")
+
         calc_mega_8_holdings(df2)
+
+        print("OK 3")
         
         save2excel(f'{vg_fd_sheet_name}',df_sorted,col_header_vg_fd)  
+
+        print("OK 4")
  
         make_export_for_yf(df_sorted,g_yf_export_vg_fd)
 
-
+        print("OK 5")
 
     except:
         print('**** ERROR 264 *****')
