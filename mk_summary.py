@@ -338,7 +338,7 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
                     continue                         
 
                 try :
-                    if (fd_row[2]=='Pending Activity'):
+                    if (fd_row[2]=='Pending Activity' or fd_row[2]=='SPAXX**' or fd_row[2]=='FDRXX**'):
                         shares = float(re.sub('[$,]', '', fd_row[7]))
                         add_shares(matrix,fd_acc_name,'$$CASH',shares,1,col_header,symb_list) 
                     else:
