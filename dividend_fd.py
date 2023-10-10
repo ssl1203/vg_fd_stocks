@@ -27,7 +27,7 @@ else:
     g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
 
 
-file = open(f'{g_data_path}fd_div_ytd_07_25.txt','r')
+file = open(f'{g_data_path}fd_div.txt','r')
 
 total=0
 total2=0
