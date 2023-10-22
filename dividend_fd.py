@@ -1,3 +1,7 @@
+# 1. select x38745588
+# 2. select ':More' then 'Tax Info YTD'
+
+
 #--------------- instrcution -----------------
 # 1. Login and select 'X38745588' account, set [Dividends/Interest] filter and 
 #    select date ranges to [year to date] (this option appears if only one account is selected)

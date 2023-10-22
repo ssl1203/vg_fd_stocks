@@ -3,6 +3,11 @@
 # edited by Windows Chrome APP 
 #Testing Git 2023-07-06
 #
+#  ***** YTD Tax Info ******
+#  1. VG data download range set to YTD
+#  2. FD - see X38745588 select ':More' then "Tax Info YTD"
+
+
 import csv
 import re
 from numpy import float32
