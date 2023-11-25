@@ -245,7 +245,8 @@ def calc_mega_8_holdings(df_all_stocks):
         del qqq_top_10_dict['GOOGL']
 
     #quick fix to include 2330.tw to TSM
-    mega8_value_dict['TSM'] += 150000
+    #mega8_value_dict['TSM'] += 150000
+    
 
 
 def add_shares(matrix,acc_name,new_symb,shares,price,col_header,symb_list):
@@ -362,7 +363,7 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
                         add_shares(matrix,fd_acc_name,symb,shares,price,col_header,symb_list)          
            
                 except ValueError:
-                    print(f'***Fatal Error (242) : add_shares symb={symb} failed') 
+                    print(f'***Fatal Error (242-365) : add_shares symb={symb} failed') 
 
     except:
         print(f'***Fatal Error (246) : Unable process [{csv_file_name}]') 
@@ -622,6 +623,10 @@ def update_stock_line_item(df2):
 
         #calc and save total value
         df2.iloc[row_no,2] = df2.iloc[row_no,1]*df2.iloc[row_no,3]
+        if df2.iloc[row_no,0] == '2330.tw':
+            mega8_value_dict['TSM'] += df2.iloc[row_no,2]/get_current_stock_price("USDTWD=X")
+            
+
 
 def main_vg_fd():
     symbs_vg_fd_list = [] # unique entry for symbol 
@@ -695,7 +700,7 @@ def tw_reader(matrix,cvs_file_name,col_header,symb_list):
            
                 except ValueError:
                     print('-------line 280', row[0],row[2])
-                    print(f'***Fatal Error (242) : symb={symb} Failed to process ({cvs_file_name})') 
+                    print(f'***Fatal Error (242-698) : symb={symb} Failed to process ({cvs_file_name})') 
 
     except:
         print(f'***Fatal Error (246) : Unable to process ({cvs_file_name})') 
