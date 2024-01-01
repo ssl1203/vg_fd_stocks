@@ -252,7 +252,10 @@ def add_shares(matrix,acc_name,new_symb,shares,price,col_header,symb_list):
     try:
         idx_col = col_header.index(acc_name)
     except:
-        print(f'*** Error : account {acc_name} not found')
+        #idx_col = 4
+        #if acc_name == 'yuanta':
+        #    print(f'$$$$$$ {acc_name} ==== {col_header[4]}')
+        print(f'*** Error : account [{acc_name}] not found in {col_header}')
         return False
 
     try:
@@ -658,6 +661,7 @@ def main_vg_fd():
         #update share_price (1), total_value (2) and total_shares (3) columns
         update_stock_line_item(df2)
 
+        print('=========================================================================')
         print(df2)
         print("OK 1")
 
@@ -685,6 +689,7 @@ def main_vg_fd():
 # { Symbol, Price, Total Value, Total Shares, yuanta, cathay, mega}
 # 
 
+""" 
 #tw_reader(matrix_2d,g_vg_dict,g_data_path+'tw.csv',col_header_tw,symbs_tw_list)
 def tw_reader(matrix,cvs_file_name,col_header,symb_list):
     fd_last_acc = ''
@@ -718,13 +723,42 @@ def tw_reader(matrix,cvs_file_name,col_header,symb_list):
     except:
         print(f'***Fatal Error (246) : Unable to process ({cvs_file_name})') 
 
+    return 
+"""
+#########################################################
+def tw_reader2(matrix,cvs_file_name,col_header,symb_list):
+    fd_last_acc = ''
+    try:
+        with open(f"{cvs_file_name}") as csv_file:
+            print(f"File Opened : [{cvs_file_name}2]")
+            fd_csv_reader = csv.reader(csv_file, delimiter=',')
+            count_0=0
+            for row in fd_csv_reader:
+                if len(row)==0 or row[0]=='':
+                    break
+                tw_acc_name = row[0]
+ 
+                try :             
+                    symb = row[1]
+                    shares = float(row[2])
+                    add_shares(matrix,tw_acc_name,symb,shares,0,col_header,symb_list)   
+                    print(f"++++++{tw_acc_name},   {symb},  {shares}" )
+                         
+           
+                except ValueError:
+                    print('-------line 280', row[0],row[2])
+                    print(f'***Fatal Error (242-698) : symb={symb} Failed to process ({cvs_file_name})') 
+
+    except:
+        print(f'***Fatal Error (246) : Unable to process ({cvs_file_name})') 
+
     return
 ###########################################################
 def main_tw():
     symbs_tw_list = [] # unique entry for symbol 
     matrix_2d = [[0 for x in range(len(col_header_tw))] for y in range(0)] 
     try:
-        tw_reader(matrix_2d,g_data_path+'tw.csv',col_header_tw,symbs_tw_list)
+        tw_reader2(matrix_2d,g_data_path+'tw2.csv',col_header_tw,symbs_tw_list)
         print('TW accounts processing complete =', datetime.now())
     except:
         print(f'*** Error tw_reader failed (512)')
