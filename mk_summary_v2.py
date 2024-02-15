@@ -248,6 +248,9 @@ def calc_mega_8_holdings(df_all_stocks):
 
 
 def add_shares(matrix,acc_name,new_symb,shares,price,col_header,symb_list):
+
+    if shares <= 0:
+        return
     
     try:
         idx_col = col_header.index(acc_name)
@@ -346,25 +349,31 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
 
                 try :
                     if (fd_row[2]=='Pending Activity' or fd_row[2]=='SPAXX**' or fd_row[2]=='FDRXX**'):
-                        shares = float(re.sub('[$,]', '', fd_row[7]))
+                        if fd_row[2]=='Pending Activity':
+                            shares = float(re.sub('[$,]', '', fd_row[6]))
+                        else:
+                            shares = float(re.sub('[$,]', '', fd_row[7]))
                         add_shares(matrix,fd_acc_name,'$$CASH',shares,1,col_header,symb_list) 
                     else:
                         symb = fd_row[2]
                         price=0
                         share=0
 
-                        price_str = re.sub('[$,]', '', fd_row[5])  #use substitue function to remove '$' and ','
-                        price = float(price_str)    
-                        share_str = re.sub('[,]', '', fd_row[4])
-                        shares = float(share_str)
-                        
+                        try:
+                            price_str = re.sub('[$,]', '', fd_row[5])  #use substitue function to remove '$' and ','
+                            price = float(price_str)    
+                            share_str = re.sub('[,]', '', fd_row[4])
+                            shares = float(share_str)
+                        except:
+                            print('fatal error :',price,shares)
+                            
                         #save_to_holding_pool(symb,shares,price,fd_acc_name,fd_row[0])
                         if int(price) == 1:
                             symb = '$$CASH' 
-                        add_shares(matrix,fd_acc_name,symb,shares,price,col_header,symb_list)          
+                        add_shares(matrix,fd_acc_name,symb,shares,price,col_header,symb_list)        
            
                 except ValueError:
-                    print(f'***Fatal Error (242-365) : add_shares symb={symb} failed') 
+                    print(f'***Fatal Error (242-365) : add_shares symb={symb}, price={price} failed') 
 
     except:
         print(f'***Fatal Error (246) : Unable process [{csv_file_name}]') 
@@ -742,7 +751,7 @@ def tw_reader2(matrix,cvs_file_name,col_header,symb_list):
                     symb = row[1]
                     shares = float(row[2])
                     add_shares(matrix,tw_acc_name,symb,shares,0,col_header,symb_list)   
-                    print(f"++++++{tw_acc_name},   {symb},  {shares}" )
+                    #print(f"++++++{tw_acc_name},   {symb},  {shares}" )
                          
            
                 except ValueError:
