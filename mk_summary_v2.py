@@ -495,7 +495,9 @@ def update_summary_sheet():
 
     ws_summary['A17'].value='Taiwan'
 
-    ws_summary['B17'].value =  ws_tw['C2'].value/ntd_x_rate
+    ws_summary['B17'].value =  ws_tw['C2'].value/31.5
+    #    ws_summary['B17'].value =  ws_tw['C2'].value/ntd_x_rate
+
 
     ws_summary['A18'].value='Tecan Stock'
     total_tecn = (get_current_stock_price("TECN.SW")*490-(264*228.6)-(226*236))
