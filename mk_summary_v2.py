@@ -672,8 +672,6 @@ def main_vg_fd():
         #update share_price (1), total_value (2) and total_shares (3) columns
         update_stock_line_item(df2)
 
-        print('=========================================================================')
-        print(df2)
         print("OK 1")
 
         df_sorted = df2.sort_values([2], ascending=[False])
