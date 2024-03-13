@@ -194,8 +194,13 @@ def get_current_stock_price(symb):
 #########################################
 ######### Get ETF Top Holdings ##########
 ######################################### 
-mega_8 = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'TSLA', 'GOOGL', 'GOOG', 'TSM']
-mega8_value_dict = {'AAPL':0, 'MSFT':0, 'AMZN':0, 'NVDA':0, 'META':0, 'TSLA':0, 'GOOGL':0, 'GOOG':0, 'TSM':0}
+#mega_8 = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'TSLA', 'GOOGL', 'GOOG', 'TSM']
+#mega8_value_dict = {'AAPL':0, 'MSFT':0, 'AMZN':0, 'NVDA':0, 'META':0, 'TSLA':0, 'GOOGL':0, 'GOOG':0, 'TSM':0}
+
+top_holdings = {'NVDA':0, 'TSM':0, 'MSFT':0, 'GOOG':0, 'AMZN':0,'AMD':0, 
+                'COST':0, 'AAPL':0, 'META':0, 'NFLX':0,'TSLA':0}
+
+
 
 def GetHoldings(etf_ticker):
     crawler_headers = {
@@ -219,6 +224,18 @@ def GetHoldings(etf_ticker):
         top_10_dict[f'{symb}'] = float(percent.replace('%',''))
     return top_10_dict
 qqq_top_10_dict = {}
+
+#################################################
+def calc_top_holdings(df_all_stocks):
+    for index, row in df_all_stocks.iterrows():
+        symb = row[0]
+        value = float(row[2])
+        if symb  in top_holdings.keys() :
+            top_holdings[f'{symb}'] += value
+#################################################
+
+
+'''''
 def calc_mega_8_holdings(df_all_stocks):
     for index, row in df_all_stocks.iterrows():
         symb = row[0]
@@ -245,7 +262,7 @@ def calc_mega_8_holdings(df_all_stocks):
 
     #quick fix to include 2330.tw to TSM
     #mega8_value_dict['TSM'] += 150000
-    
+ '''   
 
 
 def add_shares(matrix,acc_name,new_symb,shares,price,col_header,symb_list):
@@ -483,7 +500,7 @@ def update_summary_sheet():
     ws_summary['D8'].value='Sean_Roth'
     ws_summary['E8'].value='=B7+B13'
 
-    ws_summary['D9'].value='Mpehy_Roth'
+    ws_summary['D9'].value='Mephy_Roth'
     ws_summary['E9'].value='=B10+B15'
 
     ws_summary['D10'].value='Saving'
@@ -514,6 +531,19 @@ def update_summary_sheet():
 ############  Gega_8 #############################################
 ##############################################################
     
+    count=13
+    for symb, val in top_holdings.items():
+        print(f'>>>>>  {symb} = {val}')
+        ws_summary[f'D{count}'].value = symb
+        ws_summary[f'E{count}'].value = val
+        ws_summary[f'F{count}'].value = f'=E{count}/E1'
+        count=count+1
+   
+
+    ws_summary.range(f'E13:E30').number_format =   "##.00"
+    ws_summary.range(f'F13:F30').number_format =   '0.00%'
+
+
     ''''' sean
     ws_summary['D12'].value =    'Mega_8 %'
     ws_summary['G12'].value =    'QQQ %'
@@ -643,8 +673,13 @@ def update_stock_line_item(df2):
 
         #calc and save total value
         df2.iloc[row_no,2] = df2.iloc[row_no,1]*df2.iloc[row_no,3]
+
+
+
         if df2.iloc[row_no,0] == '2330.tw':
-            mega8_value_dict['TSM'] += df2.iloc[row_no,2]/get_current_stock_price("USDTWD=X")
+            val_2330 = df2.iloc[row_no,2]/get_current_stock_price("USDTWD=X")
+            top_holdings['TSM']+=val_2330
+            print('Found TSM ---',val_2330)
             
 
 ############################################################################
@@ -685,6 +720,7 @@ def main_vg_fd():
         print("OK 2")
 
         #calc_mega_8_holdings(df2)  sean
+        calc_top_holdings(df2)
 
         print("OK 3")
         
@@ -797,7 +833,9 @@ def main_tw():
 
         make_export_for_yf(df_sorted,g_yf_export_tw)
 
-    except:
+    except  Exception as e:
+        print(e)
+        traceback.print_exc()
         print('**** ERROR 474 *****')
         return 0 
 
