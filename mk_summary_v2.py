@@ -15,6 +15,7 @@ from numpy import float32
 import xlsxwriter
 import pandas as pd
 import yfinance as yf # backup for mutual fund
+import traceback
 
 import xlwings
 import shutil
@@ -512,6 +513,8 @@ def update_summary_sheet():
 ##################################################################
 ############  Gega_8 #############################################
 ##############################################################
+    
+    ''''' sean
     ws_summary['D12'].value =    'Mega_8 %'
     ws_summary['G12'].value =    'QQQ %'
     ws_summary.range(f'F10:F25').number_format =   "##.00"
@@ -540,6 +543,7 @@ def update_summary_sheet():
             ws_summary[f'{chr(col_id+3)}{row_id}'].value = qqq_top_10_dict[f'{row}']
 
         row_id+=1
+    '''
 ##################################################################
  
 
@@ -611,7 +615,9 @@ def make_export_for_yf(df_holdings,yf_export_file):
                 yf_csv.write(f'{stock_position[1]},{stock_position[2]},,,,,,,,,,{stock_position[4]},,,,\r') 
             yf_csv.close()
               
-    except:
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
         print('******************** Error (420)')
 
 
@@ -678,7 +684,7 @@ def main_vg_fd():
 
         print("OK 2")
 
-        calc_mega_8_holdings(df2)
+        #calc_mega_8_holdings(df2)  sean
 
         print("OK 3")
         
@@ -690,7 +696,9 @@ def main_vg_fd():
 
         print("OK 5")
 
-    except:
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
         print('**** ERROR 264 *****')
         return 0
 ##########################################################
@@ -758,7 +766,9 @@ def tw_reader2(matrix,cvs_file_name,col_header,symb_list):
                     print('-------line 280', row[0],row[2])
                     print(f'***Fatal Error (242-698) : symb={symb} Failed to process ({cvs_file_name})') 
 
-    except:
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
         print(f'***Fatal Error (246) : Unable to process ({cvs_file_name})') 
 
     return
