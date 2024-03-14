@@ -488,6 +488,9 @@ def update_summary_sheet():
     ws_summary['D3'].value='Fidelity'
     ws_summary['E3'].value = '=SUM(B11:B15)'
 
+    ws_summary['D4'].value='vg+fd'
+    ws_summary['E4'].value = '=E2+E3'
+
     #ws_summary['D4'].value='FD Mephy'
     #ws_summary['E4'].value='=SUM(B15:B16)+B12'
 ###################################################
@@ -534,13 +537,20 @@ def update_summary_sheet():
     count=13
     for symb, val in top_holdings.items():
         print(f'>>>>>  {symb} = {val}')
+
+        #stock symbol
         ws_summary[f'D{count}'].value = symb
+
+        #stock value
         ws_summary[f'E{count}'].value = val
+
+        #value percentage of total portfolio
         ws_summary[f'F{count}'].value = f'=E{count}/E1'
         count=count+1
    
 
-    ws_summary.range(f'E13:E30').number_format =   "##.00"
+    #ws_summary.range(f'E13:E30').number_format =   "##.00"
+    ws_summary.range(f'E13:E30').number_format =   "$#,##0"
     ws_summary.range(f'F13:F30').number_format =   '0.00%'
 
 
