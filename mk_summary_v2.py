@@ -198,7 +198,7 @@ def get_current_stock_price(symb):
 #mega8_value_dict = {'AAPL':0, 'MSFT':0, 'AMZN':0, 'NVDA':0, 'META':0, 'TSLA':0, 'GOOGL':0, 'GOOG':0, 'TSM':0}
 
 top_holdings = {'NVDA':0, 'TSM':0, 'MSFT':0, 'GOOG':0, 'AMZN':0,'AMD':0, 
-                'COST':0, 'AAPL':0, 'META':0, 'NFLX':0,'TSLA':0}
+                'COST':0, 'AAPL':0, 'META':0, 'NFLX':0}
 
 
 
@@ -235,41 +235,9 @@ def calc_top_holdings(df_all_stocks):
 #################################################
 
 
-'''''
-def calc_mega_8_holdings(df_all_stocks):
-    for index, row in df_all_stocks.iterrows():
-        symb = row[0]
-        value = float(row[2])
-        if symb  in mega_8 :
-            mega8_value_dict[f'{symb}'] += value
-            continue
-        top_10_dict = GetHoldings(symb)
-        if len(top_10_dict) == 0:
-            continue
-        for item in top_10_dict:
-            if item in mega_8:
-                #print(f' add etf ({symb}) to {item} ', float(top_10_dict[f'{item}'])/100*value)                 
-                mega8_value_dict[f'{item}'] += float(top_10_dict[f'{item}'])/100*value
-                if symb=='QQQ':
-                    qqq_top_10_dict[f'{item}'] = float(top_10_dict[f'{item}'])/100
-    #consolidate GOOGL to GOOG
-    mega8_value_dict['GOOG'] += mega8_value_dict['GOOGL']
-    del mega8_value_dict['GOOGL']
-
-    if qqq_top_10_dict['GOOG'] > 0 and qqq_top_10_dict['GOOGL'] > 0:
-        qqq_top_10_dict['GOOG']+=qqq_top_10_dict['GOOGL']
-        del qqq_top_10_dict['GOOGL']
-
-    #quick fix to include 2330.tw to TSM
-    #mega8_value_dict['TSM'] += 150000
- '''   
-
-
 def add_shares(matrix,acc_name,new_symb,shares,price,col_header,symb_list):
 
-    if shares <= 0:
-        return
-    
+    # shares can be negative as 'buy' pending transaction     
     try:
         idx_col = col_header.index(acc_name)
     except:
@@ -341,6 +309,18 @@ def vanguard_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
             print(f'*** Fatal Error (202) : Not able save {row}')
             return False                         
     return True
+
+#convert currency string "$123,456.79" to floating point
+def currency_to_float(currency_string,line_num):
+    try:
+        str = re.sub('[$,]', '', currency_string)
+        return float(str)     
+    except:
+        traceback.print_exc()
+        print(f'not able to convert currency_string [{currency_string}] string to float (352) line={line_num}')
+        return 0
+
+
 def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
 
     fd_last_acc = ''
@@ -367,10 +347,7 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
 
                 try :
                     if (fd_row[2]=='Pending Activity' or fd_row[2]=='SPAXX**' or fd_row[2]=='FDRXX**'):
-                        if fd_row[2]=='Pending Activity':
-                            shares = float(re.sub('[$,]', '', fd_row[6]))
-                        else:
-                            shares = float(re.sub('[$,]', '', fd_row[7]))
+                        shares = currency_to_float(fd_row[7],382)
                         add_shares(matrix,fd_acc_name,'$$CASH',shares,1,col_header,symb_list) 
                     else:
                         symb = fd_row[2]
@@ -378,10 +355,8 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
                         share=0
 
                         try:
-                            price_str = re.sub('[$,]', '', fd_row[5])  #use substitue function to remove '$' and ','
-                            price = float(price_str)    
-                            share_str = re.sub('[,]', '', fd_row[4])
-                            shares = float(share_str)
+                            price = currency_to_float(fd_row[5],393)                             
+                            shares = currency_to_float(fd_row[4],394)
                         except:
                             print('fatal error :',price,shares)
                             
@@ -391,7 +366,8 @@ def fidelity_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
                         add_shares(matrix,fd_acc_name,symb,shares,price,col_header,symb_list)        
            
                 except ValueError:
-                    print(f'***Fatal Error (242-365) : add_shares symb={symb}, price={price} failed') 
+                    traceback.print_exc()
+                    print(f'***Fatal Error (394) : add_shares symb={symb}, price={price} failed') 
 
     except:
         print(f'***Fatal Error (246) : Unable process [{csv_file_name}]') 
@@ -810,7 +786,8 @@ def tw_reader2(matrix,cvs_file_name,col_header,symb_list):
            
                 except ValueError:
                     print('-------line 280', row[0],row[2])
-                    print(f'***Fatal Error (242-698) : symb={symb} Failed to process ({cvs_file_name})') 
+                    traceback.print_exc()
+                    print(f'***Fatal Error (815) : symb={symb} Failed to process ({cvs_file_name})') 
 
     except Exception as e:
         print(e)
