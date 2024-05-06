@@ -40,7 +40,8 @@ import lxml
 if (platform.system()=='Darwin'):
     g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
 else: 
-    g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
+    #g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
+    g_data_path = "C:\\Users\\seanl\\OneDrive\\zzz-stock_download\\"
 
 
 g_yf_export_vg_fd = f'{g_data_path}yf_export_vg_fd_v2.csv'
