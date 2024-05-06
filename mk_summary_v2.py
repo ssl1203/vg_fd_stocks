@@ -7,6 +7,8 @@
 #  1. VG data download range set to YTD
 #  2. FD - see X38745588 select ':More' then "Tax Info YTD"
 
+#Last update 2024-05-06  sync to source control and MAC
+
 
 import csv
 import re
