@@ -66,7 +66,7 @@ def g_init():
     if (not os.path.exists(g_xl_summary_file)):
         wb = xw.Book()
         #wb.sheets.add('Sheet1')
-        wb.sheets.add('Sheet2')
+        #wb.sheets.add('Sheet2')
         wb.save(g_xl_summary_file)
         #wb.save("123.")
         wb.close()
@@ -189,7 +189,7 @@ def get_current_stock_price(symb):
             data = stock_info.history(period="1wk") # '1mo' '20mo' 
             prices = data['Close']
             price = prices.iloc[-1]
-            print(f'Got last close : {symb}')
+            #print(f'OK 5,  Got last close : {symb}')
         except:
             price=0
     return round(price ,2)   
@@ -200,8 +200,11 @@ def get_current_stock_price(symb):
 #mega_8 = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'TSLA', 'GOOGL', 'GOOG', 'TSM']
 #mega8_value_dict = {'AAPL':0, 'MSFT':0, 'AMZN':0, 'NVDA':0, 'META':0, 'TSLA':0, 'GOOGL':0, 'GOOG':0, 'TSM':0}
 
-top_holdings = {'NVDA':0, 'TSM':0, 'MSFT':0, 'GOOG':0, 'AMZN':0,'AMD':0, 
-                'COST':0, 'AAPL':0, 'META':0, 'NFLX':0}
+portfolio_top_holdings = {'NVDA':0, 'TSM':0, 'MSFT':0, 'GOOG':0, 'AMZN':0,'AAPL':0, 'META':0,'AMD':0, 
+                'COST':0, 'NFLX':0}
+
+ETF_Values = {'QQQ':0,'VOO':0,'VTI':0,'VUG':0,'SPY':0,'VOOG':0}
+mutual_funds_2_ETF = {'FZROX':'VTI', 'VTSAX':'VTI'}
 
 
 
@@ -228,13 +231,66 @@ def GetHoldings(etf_ticker):
     return top_10_dict
 qqq_top_10_dict = {}
 
+
+#get the percentage of ETF component stocks
+def get_etf_components(ETF):
+    url = f'https://www.schwab.wallst.com/schwab/Prospect/research/etfs/schwabETF/index.asp?type=holdings&symbol={ETF}'
+    etf_html = requests.get(url)
+    soup = BeautifulSoup(etf_html.content, 'html.parser')
+    
+    holding_dict = {} 
+    found = False
+    # Find all 'div' elements with the 'entry-content' class and extract text
+    for item in soup.find_all('table', { 'class' : 'standard sortable'}):   
+        found = True
+        first = True
+        for stock in item.find_all('tr'): 
+            symb = ''
+            percent = ''
+            for idx,elem in enumerate(stock.find_all('td')):             
+                if idx==0:
+                    #print(f'====={stock_rank}=====')
+                    #print("Symbol :",elem.text)
+                    symb = elem.text
+                    #lines[stock_rank] = lines[stock_rank] + f'   {elem.text}  '
+                if  idx==2:
+                    percent = elem.text
+                    #print("Price :",elem.text)
+                    #lines[stock_rank] = lines[stock_rank] + f'   {elem.text}  #'
+
+            if symb == '':
+                continue
+            holding_dict[f'{symb}'] = float(percent.replace('%',''))  
+            
+    return holding_dict      
+
 #################################################
-def calc_top_holdings(df_all_stocks):
+def calc_portfolio_top_holdings(df_all_stocks):
+
+    #loop thr all holdings and calc two dictionaries [ETF_Values, portfolio_top_holdings]
     for index, row in df_all_stocks.iterrows():
         symb = row[0]
         value = float(row[2])
-        if symb  in top_holdings.keys() :
-            top_holdings[f'{symb}'] += value
+        if symb  in portfolio_top_holdings.keys() :
+            portfolio_top_holdings[f'{symb}'] += value
+        if symb in mutual_funds_2_ETF.keys() :   # convert mutual fund to corresponding ETF
+            symb = mutual_funds_2_ETF[f'{symb}'] 
+        if symb  in ETF_Values.keys() :
+            ETF_Values[f'{symb}'] += value  
+
+    #add ETF_Values component stock values to portfolio_top_holdings 
+
+    for etf in ETF_Values.keys():
+        etf_components = get_etf_components(etf)
+        for stock in etf_components:
+            component_value = etf_components[f'{stock}'] * ETF_Values[f'{etf}'] /100
+            if stock == 'GOOGL':
+               stock = 'GOOG'
+
+            if stock in portfolio_top_holdings:
+                portfolio_top_holdings[f'{stock}'] +=  component_value
+        
+
 #################################################
 
 
@@ -297,7 +353,7 @@ def vanguard_reader(matrix,accounts_dict,csv_file_name,col_header,symb_list):
         count_0=0        
         acc_name = accounts_dict.get(row[0],'undefined')
         if acc_name=='undefined':
-            print(f"Invalid account number {row[0]}")
+            #print(f"OK z, Invalid account number {row[0]}")
             continue
         
         try :
@@ -514,8 +570,8 @@ def update_summary_sheet():
 ##############################################################
     
     count=13
-    for symb, val in top_holdings.items():
-        print(f'>>>>>  {symb} = {val}')
+    for symb, val in portfolio_top_holdings.items():
+        #print(f'OK x, >>>>>  {symb} = {val}')
 
         #stock symbol
         ws_summary[f'D{count}'].value = symb
@@ -617,7 +673,7 @@ def save2excel(sheet_name,df_sorted,col_header):
     ws.range(f'C2:{last_acc_col}2').number_format =    "#,##0"
     ws.range('C2:C2').font.bold = True
     #ws_vg_fd.range(f'C:{g_row_sum}').number_format = "#,##0.#000"
-    print(f'================ Total Value :',  "{:,.0f}".format(ws[f'C2'].value), ' ===================')
+    #print(f'======OK y, ========== Total Value :',  "{:,.0f}".format(ws[f'C2'].value), ' ===================')
 
     return True
 
@@ -667,8 +723,8 @@ def update_stock_line_item(df2):
 
         if df2.iloc[row_no,0] == '2330.tw':
             val_2330 = df2.iloc[row_no,2]/get_current_stock_price("USDTWD=X")
-            top_holdings['TSM']+=val_2330
-            print('Found TSM ---',val_2330)
+            portfolio_top_holdings['TSM']+=val_2330
+            #print('OK 6, Found TSM ---',val_2330)
             
 
 ############################################################################
@@ -702,24 +758,26 @@ def main_vg_fd():
         #update share_price (1), total_value (2) and total_shares (3) columns
         update_stock_line_item(df2)
 
-        print("OK 1")
+        #print("OK 1")
 
         df_sorted = df2.sort_values([2], ascending=[False])
 
-        print("OK 2")
+        #print("OK 2")
 
         #calc_mega_8_holdings(df2)  sean
-        calc_top_holdings(df2)
+        calc_portfolio_top_holdings(df2)
 
-        print("OK 3")
+
+
+        #print("OK 3")
         
         save2excel(f'{vg_fd_sheet_name}',df_sorted,col_header_vg_fd)  
 
-        print("OK 4")
+        #print("OK 4")
  
         make_export_for_yf(df_sorted,g_yf_export_vg_fd)
 
-        print("OK 5")
+        #print("OK 6")
 
     except Exception as e:
         print(e)
@@ -804,7 +862,7 @@ def main_tw():
     matrix_2d = [[0 for x in range(len(col_header_tw))] for y in range(0)] 
     try:
         tw_reader2(matrix_2d,g_data_path+'tw2.csv',col_header_tw,symbs_tw_list)
-        print('TW accounts processing complete =', datetime.now())
+        #print('OK z, TW accounts processing complete =', datetime.now())
     except:
         print(f'*** Error tw_reader failed (512)')
         return False
