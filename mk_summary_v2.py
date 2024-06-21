@@ -38,7 +38,9 @@ import lxml
 
 
 if (platform.system()=='Darwin'):
-    g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
+    #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'    
+    g_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
+    
 else: 
     #g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
     g_data_path = "C:\\Users\\seanl\\OneDrive\\80-股市\\00-download\\"
@@ -551,8 +553,8 @@ def update_summary_sheet():
 
     ws_summary['A17'].value='Taiwan'
 
-    ws_summary['B17'].value =  ws_tw['C2'].value/31.5
-    #    ws_summary['B17'].value =  ws_tw['C2'].value/ntd_x_rate
+    #ws_summary['B17'].value =  ws_tw['C2'].value/31.5
+    ws_summary['B17'].value =  float(ws_tw['C2'].value)/ntd_x_rate
 
 
     ws_summary['A18'].value='Tecan Stock'
