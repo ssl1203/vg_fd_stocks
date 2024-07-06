@@ -9,6 +9,7 @@
 
 #Last update 2024-05-06  sync to source control and MAC
 #2024-07-05 updated from PC
+#2024-07-05 MAC data path - /Users/seanleu/code/data/vg_fd_pos 
 
 
 import csv
@@ -39,7 +40,8 @@ import lxml
 
 
 if (platform.system()=='Darwin'):
-    #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'    
+    #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
+    # data path - /Users/seanleu/code/data/vg_fd_pos     
     g_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
     
 else: 
