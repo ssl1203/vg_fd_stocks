@@ -599,7 +599,12 @@ def main_vg_fd():
         print('Get stock prices.... =', datetime.now())
 
         df2 = pd.DataFrame(matrix_2d)
-        df2[[1,2,3]] = df2[[1,2,3]].astype(float)
+        
+        #set all columns except symbol column in df2 to float type
+        rows, columns = df2.shape
+        print(rows, columns)
+        for x in range(1,columns):
+            df2[[x]] = df2[[x]].astype(float)
 
         #update share_price (1), total_value (2) and total_shares (3) columns
         update_stock_line_item(df2)
