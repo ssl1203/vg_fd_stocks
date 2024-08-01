@@ -370,7 +370,7 @@ def update_summary_sheet():
     ws_summary['B1'].value=f'{date.today()}'
     ws_summary['B2'].value=get_current_stock_price("^GSPC")
     ws_summary['B3'].value=get_current_stock_price("^IXIC")
-    ws_summary['B4'].value=get_current_stock_price("0050.TW")
+    ws_summary['B4'].value=get_current_stock_price("NVDA")
     ws_summary['B5'].value=get_current_stock_price("QQQ")
 
 
@@ -378,7 +378,7 @@ def update_summary_sheet():
     ws_summary['A1'].value='Date'
     ws_summary['A2'].value='S&P'
     ws_summary['A3'].value='Nasdaq'
-    ws_summary['A4'].value='TW0050'
+    ws_summary['A4'].value='NVDA'
     ws_summary['A5'].value='QQQ'    
 
     

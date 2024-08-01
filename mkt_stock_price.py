@@ -20,7 +20,7 @@ def get_current_stock_price(symb):
     if pd.isna(price) :
         try:
             stock_info = yf.Ticker(symb)
-            data = stock_info.history(period="1wk") # '1mo' '20mo' 
+            data = stock_info.history(period="1mo") # '1mo' '20mo' 
             prices = data['Close']
             price = prices.iloc[-1]
             #print(f'OK 5,  Got last close : {symb}')
