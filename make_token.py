@@ -1,7 +1,8 @@
 import re
 import sys
 
-array = ['9D6PF7', 'HS7XHY', 'W5Q8R', 'Y7VSJ', 'N9MPM','6CPZB']
+array = ['3A','02401F','9D6PF7', 'HS7XHY', 'W5Q8R', 'Y7VSJ', 'N9MPM','6CPZB']
+array2 = ['3A','15022D','LYBM58','HWRAX5','MYC78','NYQBH','NFX43','5HQA8']
 
 def make_pw_token(arr):
     
@@ -11,13 +12,13 @@ def make_pw_token(arr):
     return rev[:-1]
 
 
-param_1 = input("Code>>>")
 
-rev = param_1+'-'+make_pw_token(array)
-rev2 = make_pw_token(rev)
+
+rev =  make_pw_token(array)
+rev2 = make_pw_token(array2)
 
 #print(param_1)
 print(rev)
-print(rev2==param_1)
+print(rev2)
 
 
