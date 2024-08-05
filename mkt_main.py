@@ -43,11 +43,16 @@ from mkt_rd_pos_csv import tw_reader2
 #import requests
 #import lxml
 
+# destination --> code/data/vg_fd_pos
 
 if (platform.system()=='Darwin'):
     #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
-    # data path - /Users/seanleu/code/data/vg_fd_pos     
+
+    #old data output path - /Users/seanleu/code/data/vg_fd_pos  
     g_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
+    g_input_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
+
+    #g_input_data_path = '/Users/seanleu/OneDrive/80-股市/00-download/'
     
 else: 
     #g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
@@ -90,12 +95,12 @@ def g_init():
     #     exit()
         
 
-    g_fd_download_csv = f"{g_data_path}fd.csv"
+    g_fd_download_csv = f"{g_input_data_path}fd.csv"
     if not os.path.exists(g_fd_download_csv):
         print(f'***** Fatal error, expected file not exist ({g_fd_download_csv}')
         exit()
 
-    g_vg_download_csv = f"{g_data_path}vg.csv"
+    g_vg_download_csv = f"{g_input_data_path}vg.csv"
     if not os.path.exists(g_vg_download_csv):
         print(f'***** Fatal error, expected file not exist ({g_vg_download_csv}')
         exit()
@@ -588,11 +593,11 @@ def main_vg_fd():
     try:
 
         print('Start reading VG =', datetime.now())
-        vg_list = vanguard_reader(g_vg_dict,g_data_path+'vg.csv')       
+        vg_list = vanguard_reader(g_vg_dict,g_input_data_path+'vg.csv')       
         add_2_data_matrix(matrix_2d,vg_list,symbs_vg_fd_list,col_header_vg_fd)
         
         print('Start reading FD =', datetime.now())
-        fd_list = fidelity_reader(g_fd_dict,g_data_path+"fd.csv")
+        fd_list = fidelity_reader(g_fd_dict,g_input_data_path+"fd.csv")
         add_2_data_matrix(matrix_2d,fd_list,symbs_vg_fd_list,col_header_vg_fd)
 
 

@@ -15,6 +15,7 @@ def vanguard_reader(accounts_dict,csv_file_name):
         csv_reader = csv.reader(csv_file, delimiter=',')  
     except:
         print(f'**** Failed to open {csv_file_name}')
+        exit(-1)
         return False
     
     for row in csv_reader:
@@ -111,6 +112,8 @@ def fidelity_reader(accounts_dict,csv_file_name):
 
     except:
         print(f'***Fatal Error (246) : Unable process [{csv_file_name}]') 
+        exit(-1)
+        return False
         
 
     return pos_list
