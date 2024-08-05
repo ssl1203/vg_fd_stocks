@@ -43,21 +43,18 @@ from mkt_rd_pos_csv import tw_reader2
 #import requests
 #import lxml
 
-# destination --> code/data/vg_fd_pos
+
+# OneDrive Folder : '/Users/seanleu/OneDrive/80-股市/00-download/'
 
 if (platform.system()=='Darwin'):
     #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
 
-    #old data output path - /Users/seanleu/code/data/vg_fd_pos  
-    #g_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
-    g_data_path = "/Users/seanleu/code/vg_fd/vg_fd_stocks_data/"
-
-    #g_input_data_path = '/Users/seanleu/OneDrive/80-股市/00-download/'
+    g_code_path = '/Users/seanleu/code/vg_fd/vg_fd_stocks/'
+    g_data_path = "/Users/seanleu/code/vg_fd/vg_fd_data/"
     
-else: 
-    #g_data_path = f"{os.getcwd()}\\..\\vg_fd_stocks_data\\" 
-    #g_data_path = "C:\\Users\\seanl\\OneDrive\\80-股市\\00-download\\"
-    g_data_path = "C:\\Users\\seanl\\code\\vg_fd\\vg_fd_stocks_data\\"
+else:
+    g_code_path = 'C:\\Users\\seanl\\##40_Code\\vg_fd\\vg_fd_stocks\\'    
+    g_data_path = "C:\\Users\\seanl\\##40_Code\\vg_fd\\vg_fd_data\\"
 
 
 g_yf_export_vg_fd = f'{g_data_path}yf_export_vg_fd_v2.csv'
