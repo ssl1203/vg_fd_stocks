@@ -45,6 +45,7 @@ from mkt_rd_pos_csv import tw_reader2
 
 
 # OneDrive Folder : '/Users/seanleu/OneDrive/80-股市/00-download/'
+# github : https://github.com/ssl1203/vg_fd_stocks.git
 
 if (platform.system()=='Darwin'):
     #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
