@@ -49,7 +49,8 @@ if (platform.system()=='Darwin'):
     #old g_data_path = f'{os.path.dirname(__file__)}/../vg_fd_stocks_data/'
 
     #old data output path - /Users/seanleu/code/data/vg_fd_pos  
-    g_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
+    #g_data_path = f'{os.path.dirname(__file__)}/../../data/vg_fd_pos/'
+    g_data_path = "/Users/seanleu/code/vg_fd/vg_fd_stocks_data/"
 
     #g_input_data_path = '/Users/seanleu/OneDrive/80-股市/00-download/'
     
