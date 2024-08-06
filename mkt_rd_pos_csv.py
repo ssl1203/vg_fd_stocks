@@ -51,7 +51,12 @@ def vanguard_reader(accounts_dict,csv_file_name):
 def currency_to_float(currency_string,line_num):
     try:
         str = re.sub('[$,]', '', currency_string)
-        return float(str)     
+        try :
+            val = float(str)  
+        except:
+            print(f'Error string to float conversion [{str}]')  
+            val = 0.0 
+        return val
     except:
         traceback.print_exc()
         print(f'not able to convert currency_string [{currency_string}] string to float (352) line={line_num}')
